@@ -349,9 +349,13 @@ section {
   align-items: center;
 }
 
-.about .content ul strong {
-  margin-right: 10px;
+.about .content-skills ul li {
+    display: block;
 }
+
+/*.about .content ul strong {
+  margin-right: 10px;
+}*/
 
 .about .content ul i {
   font-size: 16px;

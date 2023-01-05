@@ -1,8 +1,96 @@
 {% extends 'main/base.html' %}
-
-{% block content %}
-    <div>
-        Блок контент
+{% load static %}
+{% block hero_start %}
+      <!-- ======= Hero Section ======= -->
+  <section id="hero" class="d-flex flex-column justify-content-center align-items-center">
+    <div class="hero-container" data-aos="fade-in">
+      <h1>Разработчик игр</h1>
+      <p>Я <span class="typed" data-typed-items="программист, геймдизайнер, дизайнер уровней, QA-инженер"></span></p>
     </div>
+  </section><!-- End Hero -->
 {% endblock %}
 
+
+{% block hero_about %}
+<section id="about" class="about">
+  <div class="container">
+
+  <div class="section-title">
+    <h2>О профессии</h2>
+    <p><strong>Разработчик игр</strong> — это специалист в сфере Геймдева. В свою очередь, <strong>Геймдев</strong> (GameDev, <i>от английского games development — «разработка игр»</i>) — процесс создания игры: от разработки и дизайна до выпуска на рынок. Это могут быть игры для мобильных телефонов, консолей, компьютеров или других гаджетов.</p>
+
+    <p>Сегодня это одна из самых быстрорастущих и прибыльных отраслей. В 2021 году ее годовой оборот составил 180 миллиардов долларов, а рост — 5,4%, что сравнимо с экономическими показателями киноиндустрии.</p>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-4" data-aos="fade-right">
+      <img src="{% static 'main/img/about-img-1.jpg' %}" class="img-fluid" alt="">
+    </div>
+    <div class="col-lg-8 pt-4 pt-lg-0 content" data-aos="fade-left">
+      <h3>Разнообразие в профессии</h3>
+      <p class=""> <!-- class="fst-italic" -->
+        Разработчик игр — это не о чем-то одном. В это понятие входит множество смежных профессий, которые занимаются разработкой игр.
+      </p>
+      <div class="row">
+        <div class="col-lg-6">
+          <ul>
+            <li><i class="bi bi-chevron-right"></i> <strong>Игровой продюсер</strong></li>
+            <li><i class="bi bi-chevron-right"></i> <strong>Геймдизайнер</strong></li>
+            <li><i class="bi bi-chevron-right"></i> <strong>Художник</strong></li>
+            <li><i class="bi bi-chevron-right"></i> <strong>Программист</strong></li>
+          </ul>
+        </div>
+        <div class="col-lg-6">
+          <ul>
+            <li><i class="bi bi-chevron-right"></i> <strong>Маркетолог</strong></li>
+            <li><i class="bi bi-chevron-right"></i> <strong>Тестировщик</strong></li>
+            <li><i class="bi bi-chevron-right"></i> <strong>Сценарист</strong></li>
+            <li><i class="bi bi-chevron-right"></i> <strong>Звукорежиссер</strong></li>
+          </ul>
+        </div>
+      </div>
+      <p class="fst-italic">И еще множество других...</p>
+    </div>
+  </div>
+
+  </div>
+</section><!-- End About Section -->
+{% endblock %}
+
+{% block hero_skills %}
+    <section id="skills" class="about section-bg">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>Требуемые навыки</h2>
+          <p>Как уже было сказано выше, Разработчик игр — многогранная профессия, а значит, навыки напрямую зависит от конкретной роли человека в разработке. Однако, присутствуют некоторые общие HardSkills (<i>технические навыки</i>) и общие SoftSkills (<i>навыки общения/работы в команде</i>).</p>
+        </div>
+        <div class="content content-skills">
+          <div class="row">
+            <div class="col-lg-6">
+              <p><i>HardSkills</i></p>
+              <ul>
+                <li><i class="bi bi-chevron-right"></i> <strong>Игровой продюсер</strong></li>
+                <li><i class="bi bi-chevron-right"></i> <strong>Геймдизайнер</strong></li>
+                <li><i class="bi bi-chevron-right"></i> <strong>Художник</strong></li>
+                <li><i class="bi bi-chevron-right"></i> <strong>Программист</strong></li>
+              </ul>
+            </div>
+            <div class="col-lg-6">
+              <p><i>SoftSkills</i></p>
+              <ul>
+                <li><i class="bi bi-chevron-right"></i> <strong>Стрессоустойчивость</strong> — пригодится ввиду особенностей работы, а именно&nbsp- работе в коллективе.</li>
+                <li><i class="bi bi-chevron-right"></i> <strong>Развитая фантазия</strong> — сама игровая сфера требует доли фантазии и сотрудников</li>
+                <li><i class="bi bi-chevron-right"></i> <strong>Сценарист</strong></li>
+                <li><i class="bi bi-chevron-right"></i> <strong>Звукорежиссер</strong></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+
+
+      </div>
+    </section><!-- End Skills Section -->
+
+{% endblock %}
