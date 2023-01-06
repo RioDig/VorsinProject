@@ -1,0 +1,70 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+<section id="skills" class="about section-bg">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>Последние вакансии</h2>
+          <p>На этой странице вы можете получить данные о вакансии(-ях) в области GameDev по Разработке игр за определенный день или месяц с сайта HeadHunter.ru.</p>
+        </div>
+        <div class="content content-skills">
+          <div class="row">
+            <div class="col-lg-4" style="margin-bottom: 20px;">
+              <p><i>Вакансии за определенный день</i></p>
+                <form action="{% url 'recent_vacancies' %}" method="POST" class="vac_form" >
+                    {% csrf_token %}
+                    <div class="form-group" style="display: flex; flex-direction: column;">
+                        <label for="day">Укажите день</label>
+                        <input type="date" name="day" id="day" value="2022-12-01"  min="2022-12-01" max="2022-12-31" class="form-control">
+                    </div>
+                    <div class="text-center">
+                        <input type="submit" value="Submit">
+                    </div>
+                </form>
+            </div>
+              <div class="col-lg-2"></div>
+            <div class="col-lg-4" style="margin-bottom: 20px;">
+              <p><i>Вакансии за определенный месяц</i></p>
+                <form class="vac_form" action="{% url 'recent_vacancies' %}" method="POST" >
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="month">Укажите месяц</label>
+                        <input type="month" name="day" id="month" value="2022-12" class="form-control">
+                    </div>
+                    <div class="text-center">
+                        <input type="submit" value="Submit">
+                    </div>
+                </form>
+            </div>
+          </div>
+        </div>
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-dismissible alert-danger col-lg-6">
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <h5><strong>{{ message }}</strong></h5>
+                <p class="mb-0">Измените выбранную дату и попробуйте еще раз.</p>
+            </div>
+            {% endfor %}
+        {% endif %}
+      </div>
+    </section><!-- End Skills Section -->
+<div>
+    {% for d in data %}
+        <p>
+            {{ d.name }} <br>
+            {{ d.description }} <br>
+            {{ d.key_skills }} <br>
+            {{ d.company }} <br>
+            {{ d.salary }} <br>
+            {{ d.area_name }} <br>
+            {{ d.published_at }} <br>
+        </p>
+
+    {% endfor %}
+</div>
+
+
+{% endblock %}

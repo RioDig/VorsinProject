@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>iPortfolio Bootstrap Template - Index</title>
+  <title>GameDev - Разработчик игр</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -58,7 +58,7 @@
           <li><a href="{% url 'home' %}" class="nav-link scrollto"><i class='bx bxs-bar-chart-alt-2'></i> <span>Востребованность</span></a></li>
           <li><a href="{% url 'home' %}" class="nav-link scrollto"><i class='bx bxs-map'></i> <span>География</span></a></li>
           <li><a href="{% url 'home' %}" class="nav-link scrollto"><i class="bx bx-book-content"></i> <span>Навыки</span></a></li>
-          <li><a href="{% url 'home' %}" class="nav-link scrollto"><i class="bx bx-server"></i> <span>Последние вакансии</span></a></li>
+          <li><a href="{% url 'recent_vacancies' %}" class="nav-link scrollto"><i class="bx bx-server"></i> <span>Последние вакансии</span></a></li>
         </ul>
       </nav><!-- .nav-menu -->
     </div>
@@ -72,6 +72,15 @@
     {% endblock %}
 
     {% block hero_skills %}
+    {% endblock %}
+
+    {% block hero_demand %}
+    {% endblock %}
+
+    {% block hero_c %}
+    {% endblock %}
+
+    {% block content %}
     {% endblock %}
 
   </main><!-- End #main -->

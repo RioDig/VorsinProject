@@ -58,39 +58,156 @@
 {% endblock %}
 
 {% block hero_skills %}
-    <section id="skills" class="about section-bg">
+<section id="skills" class="about section-bg">
       <div class="container">
 
         <div class="section-title">
           <h2>Требуемые навыки</h2>
-          <p>Как уже было сказано выше, Разработчик игр — многогранная профессия, а значит, навыки напрямую зависит от конкретной роли человека в разработке. Однако, присутствуют некоторые общие HardSkills (<i>технические навыки</i>) и общие SoftSkills (<i>навыки общения/работы в команде</i>).</p>
+          <p>Как уже было сказано выше, Разработчик игр — многогранная профессия, а значит, навыки напрямую зависит от конкретной роли человека в разработке. Однако, присутствуют некоторые общие HardSkills (<i>профессиональные навыки</i>) и общие SoftSkills (<i>навыки общения/работы в команде</i>).</p>
         </div>
         <div class="content content-skills">
           <div class="row">
             <div class="col-lg-6">
               <p><i>HardSkills</i></p>
               <ul>
-                <li><i class="bi bi-chevron-right"></i> <strong>Игровой продюсер</strong></li>
-                <li><i class="bi bi-chevron-right"></i> <strong>Геймдизайнер</strong></li>
-                <li><i class="bi bi-chevron-right"></i> <strong>Художник</strong></li>
-                <li><i class="bi bi-chevron-right"></i> <strong>Программист</strong></li>
+                <li><i class="bi bi-chevron-right"></i> <strong>Знание нескольких языков программирования</strong> — (для разработчиков) чем больше, тем шире круг задач, который вы сможете выполнять. </li>
+                <li><i class="bi bi-chevron-right"></i> <strong>Английский язык</strong> — на английском доступно гораздо больше обучающих материалов, чем на других языках.</li>
+                <li><i class="bi bi-chevron-right"></i> <strong>Знание инструментария</strong> — в зависимости от спецификации, каждому нужно разбираться в своих программах/фреймворках/инструментах.</li>
+                <li><i class="bi bi-chevron-right"></i> <strong>Понимание платформы проекта</strong> — в зависимости от платформы текущего проекта (ПК/Консоли/Моб. устройства) может меняться подход к решению тех или иных задач.</li>
               </ul>
             </div>
             <div class="col-lg-6">
               <p><i>SoftSkills</i></p>
               <ul>
                 <li><i class="bi bi-chevron-right"></i> <strong>Стрессоустойчивость</strong> — пригодится ввиду особенностей работы, а именно&nbsp- работе в коллективе.</li>
-                <li><i class="bi bi-chevron-right"></i> <strong>Развитая фантазия</strong> — сама игровая сфера требует доли фантазии и сотрудников</li>
-                <li><i class="bi bi-chevron-right"></i> <strong>Сценарист</strong></li>
-                <li><i class="bi bi-chevron-right"></i> <strong>Звукорежиссер</strong></li>
+                <li><i class="bi bi-chevron-right"></i> <strong>Развитая фантазия</strong> — сама игровая сфера требует доли фантазии и сотрудников.</li>
+                <li><i class="bi bi-chevron-right"></i> <strong>Игровой опыт</strong> — отнесен к softskills по причине того, что этот навык именно наделяет специальными качествами со временем (та же фантазия, представление об играх и т.д.).</li>
+                <li><i class="bi bi-chevron-right"></i> <strong>Инициативность</strong> — желание найти наиболее удачное решение для задачи и умение обосновать его перед коллегами.</li>
               </ul>
             </div>
           </div>
+          <p class="">Разумеется, это далеко не весь перечень требуемых навыков, однако, у каждой спецификации свой набор требований.
+            Профессия действительно может показаться сложной, но все это перекрывается эмоциями, которые получают Разработчики игр.
+            В связи с этим, можно отметить еще одну важную особенность — <strong>желание дела</strong>.
+            Если не иметь доли энтузиазма, то работа может показаться монотонной, вследствие чего - быстро надоест.</p>
         </div>
 
 
 
       </div>
     </section><!-- End Skills Section -->
+{% endblock %}
 
+{% block hero_demand %}
+    <section id="facts" class="facts">
+      <div class="container">
+        <div class="row">
+          <div class="section-title col-lg-8">
+            <h2>Востребованность</h2>
+            <p>Российская геймдев-индустрия развивается семимильными шагами, привлекая все больше предпринимателей в сферу разработки игр. По данным Аналитического центра при правительстве Российской Федерации, только в 2019 году к индустрии присоединились 150 компаний, которые разрабатывают игровые продукты от небольших браузерок и мобильных приложений до проектов ААА-класса.</p>
+          </div>
+          <div class="col-lg-4" data-aos="fade-right">
+            <img src="{% static 'main/img/about-img-2.jpeg' %}" class="img-fluid" alt="">
+          </div>
+        </div>
+
+
+
+        <div class="row no-gutters">
+
+          <div class="col-lg-3 col-md-6 d-md-flex align-items-md-stretch" data-aos="fade-up">
+            <div class="count-box">
+              <i class="bi bi-emoji-smile"></i>
+              <span data-purecounter-start="0" data-purecounter-end="3" data-purecounter-duration="1" class="purecounter"></span>
+              <p><strong>миллиарда</strong> игроков по всему миру</p>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6 d-md-flex align-items-md-stretch" data-aos="fade-up" data-aos-delay="100">
+            <div class="count-box">
+              <i class="bi bi-currency-dollar"></i>
+              <span data-purecounter-start="0" data-purecounter-end="180" data-purecounter-duration="1" class="purecounter"></span>
+              <p><strong>миллиардов долларов</strong> годовой оборот индустрии в 2021 году</p>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6 d-md-flex align-items-md-stretch" data-aos="fade-up" data-aos-delay="200">
+            <div class="count-box">
+              <i class="bi bi-briefcase-fill"></i>
+              <span data-purecounter-start="0" data-purecounter-end="4330" data-purecounter-duration="1" class="purecounter"></span>
+              <p><strong>вакансий</strong> в области GameDev в России</p>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6 d-md-flex align-items-md-stretch" data-aos="fade-up" data-aos-delay="300">
+            <div class="count-box">
+              <i class="bi bi-buildings-fill"></i>
+              <span data-purecounter-start="0" data-purecounter-end="300" data-purecounter-duration="1" class="purecounter"></span>
+              <p><strong>игровых компаний</strong> в России на 2021 год</p>
+            </div>
+          </div>
+          <p>Чтобы ознакомиться подробнее с аналитикой востребованности, вы можете перейти по этой ссылке</p>
+          <a href="{% url 'home' %}">
+            <button type="button" class="btn btn-primary" style="max-width: 100px; ">Перейти</button>
+          </a>
+        </div>
+
+
+
+      </div>
+    </section><!-- End Facts Section -->
+{% endblock %}
+
+{% block hero_c %}
+<section id="resume" class="resume section-bg">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>Карьера Разработчика игр</h2>
+          <p>Карьерный путь по этой профессии ничем особо не отличается от любой профессии в IT-сфере. Здесь так же обычно выделяют три уровня (грейда): Junior, Middle, Senior.
+            Однако, в зависимости от спецификации профессии, сотрудник может выполнять разные, свойственные ему, задачи.</p>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-7" data-aos="fade-up" data-aos-delay="100">
+            <h3 class="resume-title">Карьерный путь</h3>
+            <div class="resume-item">
+              <h4>Junior</h4>
+              <h5>Опыт: Начало работы - 2 года</h5>
+              <p><em>Начинающий разработчик</em></p>
+              <ul>
+                <li>Обычно работают с багами и над небольшими задачами, которые ставят старшие разработчики.</li>
+                <li>Только осваивают свою новую работу.</li>
+                <li>Обучение составляет большую часть времени.</li>
+              </ul>
+            </div>
+            <div class="resume-item">
+              <h4>Middle</h4>
+              <h5>Опыт: 2 года - 5 лет</h5>
+              <p><em>Уверенный разработчик</em></p>
+              <ul>
+                <li>Занимается простыми замкнутыми системами внутри игры, например интерфейсами или механикой движения персонажей.</li>
+                <li>Готовы брать более сложные задачи и понимать ответственность.</li>
+                <li>Меньше зависят от старших разработчиков.</li>
+              </ul>
+            </div>
+            <div class="resume-item">
+              <h4>Senior</h4>
+              <h5>Опыт: 5 лет - 10 лет</h5>
+              <p><em>Старший разработчик</em></p>
+              <ul>
+                <li>Собирают работающую игру из созданных систем.</li>
+                <li>Программируют сложную игровую логику.</li>
+                <li>Начинают помогать начинающим Junior-разработчикам.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-lg-5" data-aos="fade-up" data-aos-delay="100">
+            <img src="{% static 'main/img/about-img-3.jpg' %}" style="max-width: 500px; margin-top: 40px;">
+            <img src="{% static 'main/img/about-img-4.jpg' %}" style="max-width: 500px; margin-top: 100px;">
+          </div>
+        </div>
+
+      </div>
+    </section><!-- End Resume Section -->
 {% endblock %}
