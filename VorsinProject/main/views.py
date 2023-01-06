@@ -13,9 +13,9 @@ def recent_vacancies(request):
         vacancies_data = API_Requests.get_vacancies(day)
         if vacancies_data is not None:
             context = {'data': vacancies_data}
-            return render(request, 'main/test.html', context=context)
+            return render(request, 'main/recent_vacancies.html', context=context)
         else:
             messages.error(request, 'Ничего не найдено')
-        return render(request, 'main/test.html')
-    return render(request, 'main/test.html')
+        return render(request, 'main/recent_vacancies.html')
+    return render(request, 'main/recent_vacancies.html')
 

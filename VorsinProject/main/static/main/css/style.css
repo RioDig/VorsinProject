@@ -1005,6 +1005,30 @@ section {
   background: #37b3ed;
 }
 
+.vac_form button:hover {
+  background: #37b3ed;
+}
+
+.vac_form button {
+  box-shadow: none;
+  font-size: 14px;
+}
+
+.vac_form button {
+  background: #149ddd;
+  border: 0;
+  padding: 10px 24px;
+  color: #fff;
+  transition: 0.4s;
+  border-radius: 4px;
+}
+
+.vac_form button {
+  height: 44px;
+}
+
+
+
 @-webkit-keyframes animate-loading {
   0% {
     transform: rotate(0deg);

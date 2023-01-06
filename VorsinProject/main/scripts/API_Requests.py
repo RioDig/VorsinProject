@@ -1,5 +1,4 @@
 import datetime
-
 import requests
 import re
 
@@ -11,12 +10,18 @@ def clean_html(raw_html: str) -> str:
     :param raw_html: Исходная строка данных
     :return: Возвращает универсальную строку для обработки
     """
-    clean_text = re.sub('<.*?>', '', raw_html).replace('\r\n', ' ').replace(u'\xa0', ' ').replace(u'\u2002',
-                                                                                                  ' ').strip()
+    clean_text = re.sub('<.*?>', ' ', raw_html).replace('\r\n', ' ').replace(u'\xa0', ' ').replace(u'\u2002',
+                                                                                                  ' ').replace('&quot', '').strip()
     return re.sub(' +', ' ', clean_text)
 
 
 def valute_formatter(raw_str: dict) -> str:
+    """
+    Приводит оклад вакансии в форматированный вид: <число> <код валюты> (<название валюты>)
+
+    :param raw_str: Исходные данные о вакансии (оклад)
+    :return: Возвращает строку в форматированном вид
+    """
     valutes = {
         "AZN": "Манаты",
         "BYR": "Белорусские рубли",
@@ -33,11 +38,13 @@ def valute_formatter(raw_str: dict) -> str:
            f"{raw_str['salary']['currency']} ({valutes[raw_str['salary']['currency']]})"
 
 
-def skills_formatter(raw_skills: list) -> str:
-    return ', '.join([skill['name'] for skill in raw_skills])
+def parse_date(date: str) -> str:
+    """
+    Приводит дату вакансии в форматированный вид: <число> <месяц (названием)> <год> <время в формате чч:мм>
 
-
-def parse_date(date):
+    :param date: Исходная строка даты в формате: %Y-%m-%d %H:%M:%S
+    :return: Возвращает строку в форматированном виде
+    """
     return datetime.datetime.strptime(date.replace('T', ' ')[:18], '%Y-%m-%d %H:%M:%S')
 
 
@@ -69,11 +76,12 @@ def get_vacancies(date: str):
             vacancy_info = {
                 'name': vacancy['name'],
                 'description': clean_html(vacancy['description']),
-                'key_skills': skills_formatter(vacancy['key_skills']),
+                'key_skills': ', '.join([skill['name'] for skill in vacancy['key_skills']]),
                 'company': vacancy['employer']['name'],
                 'salary': valute_formatter(vacancy),
                 'area_name': vacancy['area']['name'],
-                'published_at': parse_date(vacancy['published_at'])
+                'published_at': parse_date(vacancy['published_at']),
+                'id': vacancy['id'],
             }
             formatted_vacancies.append(vacancy_info)
 
