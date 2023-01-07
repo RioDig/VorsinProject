@@ -1005,13 +1005,13 @@ section {
   background: #37b3ed;
 }
 
-.vac_form button:hover {
-  background: #37b3ed;
-}
-
 .vac_form button {
   box-shadow: none;
   font-size: 14px;
+}
+
+.vac_form button:hover {
+  background: #37b3ed;
 }
 
 .vac_form button {

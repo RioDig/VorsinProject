@@ -75,7 +75,8 @@ def get_vacancies(date: str):
         for vacancy in vacancies_full:
             vacancy_info = {
                 'name': vacancy['name'],
-                'description': clean_html(vacancy['description']),
+                # 'description': clean_html(vacancy['description']),
+                'description': vacancy['description'],
                 'key_skills': ', '.join([skill['name'] for skill in vacancy['key_skills']]),
                 'company': vacancy['employer']['name'],
                 'salary': valute_formatter(vacancy),

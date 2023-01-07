@@ -1,0 +1,52 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+<section id="skills" class="about section-bg">
+  <div class="container">
+
+    <div class="section-title">
+      <h2>Востребованность по профессии</h2>
+      <p>Здесь вы можете получить аналитику по выбранной вами профессии. Для этого, в поле введите ключевые слова или название профессии.
+          По умолчанию, в поле выставлены ключевые слова для профессии "Разработчик игр"</p>
+    </div>
+    <div class="content content-skills">
+      <div class="row">
+          <div class="col-lg-2"></div>
+        <div class="col-lg-8" style="margin-bottom: 20px;">
+            <form action="{% url 'geo_vacancies' %}" method="POST" class="vac_form" >
+                {% csrf_token %}
+                <div class="form-group" style="display: flex; flex-direction: column;">
+                    <label for="key_words">Укажите профессию или ключевые слова</label>
+                    <input type="text" name="key_words" id="key_words" value="" class="form-control">
+                    <label for="area_name">Укажите город</label>
+                    <input type="text" name="area_name" id="area_name" value="" class="form-control">
+                </div>
+                <div class="text-center">
+                    <input type="submit" value="Получить аналитику">
+                </div>
+            </form>
+        </div>
+      </div>
+    </div>
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-dismissible alert-danger col-lg-6">
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <h5><strong>{{ message }}</strong></h5>
+            <p class="mb-0">Измените выбранную дату и попробуйте еще раз.</p>
+        </div>
+        {% endfor %}
+    {% endif %}
+  </div>
+</section><!-- End Skills Section -->
+{% if fig1 %}
+<div>
+    <img src='data:image/png;base64,{{ fig1 }}'>
+    <img src='data:image/png;base64,{{ fig2 }}'>
+    <img src='data:image/png;base64,{{ fig3 }}'>
+    <img src='data:image/png;base64,{{ fig4 }}'>
+</div>
+
+{% endif %}
+{% endblock %}

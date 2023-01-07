@@ -2,6 +2,8 @@
 {% load static %}
 
 {% block content %}
+
+
 <section id="skills" class="about section-bg">
   <div class="container">
 
@@ -63,9 +65,9 @@
                     <h2 style="margin-bottom: 14px;"> {{ d.name }}</h2>
 
                     <div>
-                        <h3 style="margin-bottom: 5px; font-size: 18px;"><strong>Описание:</strong></h3>
+<!--                        <h3 style="margin-bottom: 5px; font-size: 18px;"><strong>Описание:</strong></h3>-->
                         <p>
-                            {{ d.description }}
+                            {{ d.description | safe }}
                         </p>
                     </div>
                     <div>
