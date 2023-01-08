@@ -4,8 +4,9 @@ import sqlite3
 import numpy as np
 import pandas as pd
 import matplotlib
-from typing import Dict, Any
+from typing import Dict, Any, List
 from matplotlib import pyplot as plt, cm
+
 matplotlib.use('Agg')
 
 
@@ -22,23 +23,35 @@ def sort_dict_area(unsorted_dict: Dict[Any, Any]) -> Dict[Any, Any]:
 
 
 connect = sqlite3.connect("db.sqlite3", check_same_thread=False)
-ultimate_dict = {'2003': 0, '2004': 0, '2005': 0, '2006': 0, '2007': 0, '2008': 0, '2009': 0, '2010': 0, '2011': 0,
+template_dict = {'2003': 0, '2004': 0, '2005': 0, '2006': 0, '2007': 0, '2008': 0, '2009': 0, '2010': 0, '2011': 0,
                  '2012': 0, '2013': 0, '2014': 0, '2015': 0, '2016': 0, '2017': 0, '2018': 0, '2019': 0, '2020': 0,
                  '2021': 0, '2022': 0}
 
 
-def generate_image(year_analytics_dicts):
+def generate_base64_token(graph) -> str:
     """
-    Метод для генерации .png графиков с аналитикой по годам
+    Метод для создания токена графика
 
-    :param profession_name: Название профессии
-    :param year_analytics_dicts: Словари с аналитикой по годам для всех профессий и для выбранной профессии
+    :param graph: Передаваемый график
+    :return: Возвращает токен в формате строки
     """
-    graph = plt.figure()
+    flike = io.BytesIO()
+    graph.savefig(flike)
+    return base64.b64encode(flike.getvalue()).decode()
+
+
+def generate_image_demand(year_analytics_dicts: List) -> List[str]:
+    """
+    Метод для генерации .png графиков с аналитикой в раздел "Востребованность"
+
+    :param year_analytics_dicts: Словари с аналитикой по годам для всех профессий и для выбранной профессии
+    :returns: Возвращает список токенов графиков для дальнейшего использования в HTML-шаблоне
+    """
+    graph1 = plt.figure()
     width = 0.4
     x_axis = np.arange(len(year_analytics_dicts[0].keys()))
 
-    first_graph = graph.add_subplot()
+    first_graph = graph1.add_subplot()
     first_graph.set_title("Уровень зарплат по годам")
     first_graph.bar(x_axis - width / 2, year_analytics_dicts[0].values(), width, label="средняя з/п")
     first_graph.bar(x_axis + width / 2, year_analytics_dicts[1].values(), width,
@@ -48,10 +61,7 @@ def generate_image(year_analytics_dicts):
     first_graph.legend(fontsize=8)
     first_graph.grid(True, axis="y")
     plt.tight_layout()
-
-    flike = io.BytesIO()
-    graph.savefig(flike)
-    b64_1 = base64.b64encode(flike.getvalue()).decode()
+    b64_1 = generate_base64_token(graph1)
 
     graph2 = plt.figure()
     second_graph = graph2.add_subplot()
@@ -64,25 +74,30 @@ def generate_image(year_analytics_dicts):
     second_graph.tick_params(axis="both", labelsize=8)
     second_graph.legend(fontsize=8)
     second_graph.grid(True, axis="y")
-
     plt.tight_layout()
-    flike2 = io.BytesIO()
-    graph2.savefig(flike2)
-    b64_2 = base64.b64encode(flike2.getvalue()).decode()
+    b64_2 = generate_base64_token(graph2)
+
     return [b64_1, b64_2]
 
-def get_demand_analytics(key_words):
-    pr = "SELECT SUBSTR(published_at, 1, 4) AS year, ROUND(AVG(salary)) FROM 'vacancy_db.sqlite' WHERE "
-    pv = "SELECT SUBSTR(published_at, 1, 4) AS year, COUNT(name) FROM 'vacancy_db.sqlite' WHERE "
+
+def get_demand_analytics(key_words: List[str]) -> Dict:
+    """
+    Метод для создания запросов к Базе данных для получения аналитики по востребованности определенной профессии
+
+    :param key_words: Ключевые слова профессии
+    :return: Возвращает токены на графики аналитики
+    """
+    prof_year_salary_sql = "SELECT SUBSTR(published_at, 1, 4) AS year, ROUND(AVG(salary)) FROM 'vacancy_db.sqlite' WHERE "
+    prof_year_vacancy_sql = "SELECT SUBSTR(published_at, 1, 4) AS year, COUNT(name) FROM 'vacancy_db.sqlite' WHERE "
     for i in range(0, len(key_words)):
         if i == len(key_words) - 1:
-            pr += f"name LIKE '%{key_words[i]}%' "
-            pv += f"name LIKE '%{key_words[i]}%' "
+            prof_year_salary_sql += f"name LIKE '%{key_words[i]}%' "
+            prof_year_vacancy_sql += f"name LIKE '%{key_words[i]}%' "
             break
-        pr += f"name LIKE '%{key_words[i]}%' OR "
-        pv += f"name LIKE '%{key_words[i]}%' OR "
-    pr += "GROUP BY year"
-    pv += "GROUP BY year"
+        prof_year_salary_sql += f"name LIKE '%{key_words[i]}%' OR "
+        prof_year_vacancy_sql += f"name LIKE '%{key_words[i]}%' OR "
+    prof_year_salary_sql += "GROUP BY year"
+    prof_year_vacancy_sql += "GROUP BY year"
 
     year_salary_groups = pd.read_sql(
         "SELECT SUBSTR(published_at, 1, 4) AS year, ROUND(AVG(salary)) FROM 'vacancy_db.sqlite' GROUP BY year", connect)
@@ -92,43 +107,45 @@ def get_demand_analytics(key_words):
         "SELECT SUBSTR(published_at, 1, 4) AS year, COUNT(name) FROM 'vacancy_db.sqlite' GROUP BY year", connect)
     year_vacancy_dict = dict(year_vacancy_groups[["year", "COUNT(name)"]].to_dict("split")["data"])
 
-    profession_year_salary_groups = pd.read_sql(pr, connect)
-    profession_year_salary_dict = {**ultimate_dict, **dict(
+    profession_year_salary_groups = pd.read_sql(prof_year_salary_sql, connect)
+    profession_year_salary_dict = {**template_dict, **dict(
         profession_year_salary_groups[["year", "ROUND(AVG(salary))"]].to_dict("split")["data"])}
 
-    profession_year_vacancy_groups = pd.read_sql(pv, connect)
-    profession_year_vacancy_dict = {**ultimate_dict, **dict(
+    profession_year_vacancy_groups = pd.read_sql(prof_year_vacancy_sql, connect)
+    profession_year_vacancy_dict = {**template_dict, **dict(
         profession_year_vacancy_groups[["year", "COUNT(name)"]].to_dict("split")["data"])}
 
     analytics_list = [year_salary_dict, profession_year_salary_dict, year_vacancy_dict, profession_year_vacancy_dict]
 
-    return generate_image(analytics_list)
+    analysis_list = []
+    for key, value in analytics_list[0].items():
+        analysis_list.append({'year': key, 'val0': value, 'val1': analytics_list[1][key], 'val2': analytics_list[2][key], 'val3': analytics_list[3][key]})
+    return {'tokens': generate_image_demand(analytics_list), 'data': analysis_list}
 
-def generate_image2(area_name, area_dicts, year_dicts):
+
+def generate_image_geo(area_name: str, area_dicts: List[Dict], year_dicts: List[Dict]) -> List[str]:
     """
-    Метод для генерации .png графиков с аналитикой по городам
+    Метод для генерации .png графиков с аналитикой в разделе "География"
 
-    :param profession_name: Название профессии
     :param area_name: Название региона
     :param area_dicts: Список словарей по городам
     :param year_dicts: Список словарей по годам
+    :returns: Возвращает список токенов графиков для дальнейшего использования в HTML-шаблоне
     """
-    graph = plt.figure()
+    graph1 = plt.figure()
     width = 0.4
     x_axis = np.arange(len(year_dicts[0].keys()))
 
-    first_graph = graph.add_subplot()
+    first_graph = graph1.add_subplot()
     first_graph.set_title("Уровень зарплат по годам")
-    first_graph.bar(x_axis, year_dicts[0].values(), width, label=f"з/п по выбранным ключевым словам в {area_name.lower()}")
+    first_graph.bar(x_axis, year_dicts[0].values(), width,
+                    label=f"з/п по выбранным ключевым словам: {area_name.lower()}")
     first_graph.set_xticks(x_axis, year_dicts[0].keys(), rotation="vertical")
     first_graph.tick_params(axis="both", labelsize=8)
     first_graph.legend(fontsize=8)
     first_graph.grid(True, axis="y")
-
     plt.tight_layout()
-    flike1 = io.BytesIO()
-    graph.savefig(flike1)
-    b64_1 = base64.b64encode(flike1.getvalue()).decode()
+    b64_1 = generate_base64_token(graph1)
 
     graph2 = plt.figure()
     second_graph = graph2.add_subplot()
@@ -136,16 +153,13 @@ def generate_image2(area_name, area_dicts, year_dicts):
     second_graph.bar(x_axis,
                      year_dicts[1].values(),
                      width,
-                     label=f"Количество вакансий по выбранным ключевым словам в {area_name.lower()}")
+                     label=f"Количество вакансий по выбранным ключевым словам: {area_name.lower()}")
     second_graph.set_xticks(x_axis, year_dicts[1].keys(), rotation="vertical")
     second_graph.tick_params(axis="both", labelsize=8)
     second_graph.legend(fontsize=8)
     second_graph.grid(True, axis="y")
-
     plt.tight_layout()
-    flike2 = io.BytesIO()
-    graph2.savefig(flike2)
-    b64_2 = base64.b64encode(flike2.getvalue()).decode()
+    b64_2 = generate_base64_token(graph2)
 
     graph3 = plt.figure()
     y_cities = np.arange(len(area_dicts[0].keys()))
@@ -160,11 +174,8 @@ def generate_image2(area_name, area_dicts, year_dicts):
     third_graph.tick_params(axis="y", labelsize=6)
     third_graph.invert_yaxis()
     third_graph.grid(True, axis="x")
-
     plt.tight_layout()
-    flike3 = io.BytesIO()
-    graph3.savefig(flike3)
-    b64_3 = base64.b64encode(flike3.getvalue()).decode()
+    b64_3 = generate_base64_token(graph3)
 
     graph4 = plt.figure()
     fourth_graph = graph4.add_subplot()
@@ -176,14 +187,20 @@ def generate_image2(area_name, area_dicts, year_dicts):
                      textprops={'fontsize': 6},
                      colors=cm.Set3(np.arange(11)))
     fourth_graph.axis('equal')
-
     plt.tight_layout()
-    flike1 = io.BytesIO()
-    graph4.savefig(flike1)
-    b64_4 = base64.b64encode(flike1.getvalue()).decode()
+    b64_4 = generate_base64_token(graph4)
+
     return [b64_1, b64_2, b64_3, b64_4]
 
-def get_geo_analytics(key_words, area_name):
+
+def get_geo_analytics(key_words: List[str], area_name: str):
+    """
+    Метод для создания запросов к Базе данных для получения аналитики по географии определенной профессии и города
+
+    :param key_words: Ключевые слова по профессии
+    :param area_name: Название города
+    :return: Возвращает список токенов графиков аналитики
+    """
     db_length = pd.read_sql("SELECT COUNT(*) FROM 'vacancy_db.sqlite'", connect).to_dict()["COUNT(*)"][0]
     prof_area_vacancy_salary = f"SELECT SUBSTR(published_at, 1, 4) AS year, ROUND(AVG(salary)) FROM 'vacancy_db.sqlite' WHERE (area_name == '{area_name}' AND ( "
     prof_area_vacancy_count = f"SELECT SUBSTR(published_at, 1, 4) AS year, COUNT(name) FROM 'vacancy_db.sqlite' WHERE (area_name == '{area_name}' AND ( "
@@ -213,13 +230,26 @@ def get_geo_analytics(key_words, area_name):
     area_vacancy_dict = dict(area_vacancy_groups[["area_name", 'COUNT(area_name)']].to_dict("split")["data"])
 
     vacancy_area_salary = pd.read_sql(prof_area_vacancy_salary, connect)
-    vacancy_area_salary = {**ultimate_dict,
+    vacancy_area_salary = {**template_dict,
                            **dict(vacancy_area_salary[["year", "ROUND(AVG(salary))"]].to_dict("split")["data"])}
 
     vacancy_area_count = pd.read_sql(prof_area_vacancy_count, connect)
-    vacancy_area_count = {**ultimate_dict, **dict(vacancy_area_count[["year", "COUNT(name)"]].to_dict("split")["data"])}
+    vacancy_area_count = {**template_dict, **dict(vacancy_area_count[["year", "COUNT(name)"]].to_dict("split")["data"])}
 
     year_dicts = [vacancy_area_salary, vacancy_area_count]
     area_dicts = [area_salary_dict, area_vacancy_dict]
 
-    return generate_image2(area_name, area_dicts, year_dicts)
+    year_analysis = []
+    for key, value in year_dicts[0].items():
+        year_analysis.append({'year': key, 'val0': value, 'val1': year_dicts[1][key]})
+
+    area_analysis_salary = []
+    for key, value in area_dicts[0].items():
+        area_analysis_salary.append({'area': key, 'val0': value})
+
+    area_analysis_fraction = []
+    for key, value in area_dicts[1].items():
+        area_analysis_fraction.append({'area': key, 'val0': value})
+
+    return {'data': generate_image_geo(area_name, area_dicts, year_dicts), 'year_analysis': year_analysis,
+            'area_analysis_salary': area_analysis_salary, 'area_analysis_fraction': area_analysis_fraction}
