@@ -47,7 +47,7 @@ def geo_vacancies(request):
     if request.method == 'POST':
         key_words = request.POST.get('key_words')
         area_name = request.POST.get('area_name')
-        pattern = re.compile("^[a-zA-Zа-яА-ЯёЁ+ ]+$")
+        pattern = re.compile("^[a-zA-Zа-яА-ЯёЁ+ -]+$")
         if pattern.search(key_words) is not None and pattern.search(area_name) is not None:
             try:
                 key_words = key_words.split('+')
@@ -63,3 +63,27 @@ def geo_vacancies(request):
             messages.error(request, 'Вы ввели неверные ключевые слова или город')
             return render(request, 'main/geo_vacancies.html')
     return render(request, 'main/geo_vacancies.html')
+
+
+def skills(request):
+    if request.method == 'POST':
+        key_words = request.POST.get('key_words')
+        year = request.POST.get('year')
+        pattern = re.compile("^[a-zA-Zа-яА-ЯёЁ+ -]+$")
+        if pattern.search(key_words) is not None:
+            try:
+                key_words = key_words.split('+')
+            except:
+                messages.error(request, 'Ошибка при вводе ключевых слов')
+                return render(request, 'main/skills.html')
+
+            skills_data = SQL_Analytics_Requests.get_skills_analytics(key_words, year)
+            if skills_data is not None:
+                context = {'fig1': skills_data['fig1'], 'data': skills_data['data'], 'year': year, 'key_words': key_words}
+                return render(request, 'main/skills.html', context=context)
+            else:
+                messages.error(request, 'Ничего не найдено')
+        else:
+            messages.error(request, 'Вы ввели неверные ключевые слова')
+        return render(request, 'main/skills.html')
+    return render(request, 'main/skills.html')

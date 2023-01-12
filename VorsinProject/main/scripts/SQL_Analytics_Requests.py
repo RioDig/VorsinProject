@@ -119,7 +119,9 @@ def get_demand_analytics(key_words: List[str]) -> Dict:
 
     analysis_list = []
     for key, value in analytics_list[0].items():
-        analysis_list.append({'year': key, 'val0': value, 'val1': analytics_list[1][key], 'val2': analytics_list[2][key], 'val3': analytics_list[3][key]})
+        analysis_list.append(
+            {'year': key, 'val0': value, 'val1': analytics_list[1][key], 'val2': analytics_list[2][key],
+             'val3': analytics_list[3][key]})
     return {'tokens': generate_image_demand(analytics_list), 'data': analysis_list}
 
 
@@ -253,3 +255,53 @@ def get_geo_analytics(key_words: List[str], area_name: str):
 
     return {'data': generate_image_geo(area_name, area_dicts, year_dicts), 'year_analysis': year_analysis,
             'area_analysis_salary': area_analysis_salary, 'area_analysis_fraction': area_analysis_fraction}
+
+
+def generate_image_skills(skills_dict: Dict[str, float]) -> str:
+    """
+    Метод для генерации .png графиков с аналитикой в разделе "Навыки"
+
+
+    :param skills_dict: Словарь с навыками и частотностью
+    :returns: Возвращает токен графика для дальнейшего использования в HTML-шаблоне
+    """
+    graph4 = plt.figure()
+    fourth_graph = graph4.add_subplot()
+    fourth_graph.set_title("Топ-10 навыков в выбранном году")
+    skills_dict = {'Другие': 1 - sum(skills_dict.values()), **skills_dict}
+    fourth_graph.pie(skills_dict.values(),
+                     autopct='%1.1f%%',
+                     labels=skills_dict.keys(),
+                     startangle=0,
+                     textprops={'fontsize': 6},
+                     colors=cm.Set3(np.arange(11)))
+    fourth_graph.axis('equal')
+    plt.tight_layout()
+    b64_4 = generate_base64_token(graph4)
+
+    return b64_4
+
+
+def get_skills_analytics(key_words: List[str], year: str) -> Dict:
+    """
+    Метод для создания запросов к Базе данных для получения аналитики по топ-10 навыков за указанный год по профессии
+
+    :param year: Указанный год
+    :param key_words: Ключевые слова по профессии
+    :return: Возвращает токен графика аналитики
+    """
+    skills_sql = f"SELECT key_skills FROM 'vacancy_db.sqlite' WHERE (substr(published_at, 1, 4) == '{year}' AND key_skills NOT NULL AND ( "
+    for i in range(0, len(key_words)):
+        if i == len(key_words) - 1:
+            skills_sql += f"name LIKE '%{key_words[i]}%') "
+            break
+        skills_sql += f"name LIKE '%{key_words[i]}%' OR "
+    skills_sql += " )"
+
+    df = pd.read_sql(skills_sql, connect)
+    df['key_skills'] = df['key_skills'].str.split('\n')
+    df = df.explode('key_skills').reset_index(drop=True)
+    df = df['key_skills'].value_counts(normalize=True).to_frame()
+    df = df.apply(lambda x: round(x['key_skills'], 3), axis=1).to_frame(name='key_skills')
+    df = df[0:10]['key_skills'].to_dict()
+    return {'fig1': generate_image_skills(df), 'data': df}

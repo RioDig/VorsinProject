@@ -43,6 +43,8 @@
   /**
    * Navbar links active state on scroll
    */
+  $('.navigation a[href="' + window.location.pathname + '"]').addClass('active');
+
   let navbarlinks = select('#navbar .scrollto', true)
   const navbarlinksActive = () => {
     let position = window.scrollY + 200
@@ -50,7 +52,7 @@
       if (!navbarlink.hash) return
       let section = select(navbarlink.hash)
       if (!section) return
-      if (position >= section.offsetTop && position <= (section.offsetTop + section.offsetHeight)) {
+      if (position >= section.offsetTop) {
         navbarlink.classList.add('active')
       } else {
         navbarlink.classList.remove('active')
