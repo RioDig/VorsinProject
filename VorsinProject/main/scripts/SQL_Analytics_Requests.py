@@ -87,33 +87,24 @@ def get_demand_analytics(key_words: List[str]) -> Dict:
     :param key_words: Ключевые слова профессии
     :return: Возвращает токены на графики аналитики
     """
-    prof_year_salary_sql = "SELECT SUBSTR(published_at, 1, 4) AS year, ROUND(AVG(salary)) FROM 'vacancy_db.sqlite' WHERE "
-    prof_year_vacancy_sql = "SELECT SUBSTR(published_at, 1, 4) AS year, COUNT(name) FROM 'vacancy_db.sqlite' WHERE "
+    prof_year_salary_sql = "SELECT SUBSTR(published_at, 1, 4) AS year, ROUND(AVG(salary)), COUNT(name) FROM 'vacancy_db.sqlite' WHERE "
     for i in range(0, len(key_words)):
         if i == len(key_words) - 1:
             prof_year_salary_sql += f"name LIKE '%{key_words[i]}%' "
-            prof_year_vacancy_sql += f"name LIKE '%{key_words[i]}%' "
             break
         prof_year_salary_sql += f"name LIKE '%{key_words[i]}%' OR "
-        prof_year_vacancy_sql += f"name LIKE '%{key_words[i]}%' OR "
     prof_year_salary_sql += "GROUP BY year"
-    prof_year_vacancy_sql += "GROUP BY year"
 
     year_salary_groups = pd.read_sql(
-        "SELECT SUBSTR(published_at, 1, 4) AS year, ROUND(AVG(salary)) FROM 'vacancy_db.sqlite' GROUP BY year", connect)
+        "SELECT SUBSTR(published_at, 1, 4) AS year, ROUND(AVG(salary)), COUNT(name) FROM 'vacancy_db.sqlite' GROUP BY year", connect)
     year_salary_dict = dict(year_salary_groups[["year", "ROUND(AVG(salary))"]].to_dict("split")["data"])
-
-    year_vacancy_groups = pd.read_sql(
-        "SELECT SUBSTR(published_at, 1, 4) AS year, COUNT(name) FROM 'vacancy_db.sqlite' GROUP BY year", connect)
-    year_vacancy_dict = dict(year_vacancy_groups[["year", "COUNT(name)"]].to_dict("split")["data"])
+    year_vacancy_dict = dict(year_salary_groups[["year", "COUNT(name)"]].to_dict("split")["data"])
 
     profession_year_salary_groups = pd.read_sql(prof_year_salary_sql, connect)
     profession_year_salary_dict = {**template_dict, **dict(
         profession_year_salary_groups[["year", "ROUND(AVG(salary))"]].to_dict("split")["data"])}
-
-    profession_year_vacancy_groups = pd.read_sql(prof_year_vacancy_sql, connect)
     profession_year_vacancy_dict = {**template_dict, **dict(
-        profession_year_vacancy_groups[["year", "COUNT(name)"]].to_dict("split")["data"])}
+        profession_year_salary_groups[["year", "COUNT(name)"]].to_dict("split")["data"])}
 
     analytics_list = [year_salary_dict, profession_year_salary_dict, year_vacancy_dict, profession_year_vacancy_dict]
 
@@ -204,39 +195,29 @@ def get_geo_analytics(key_words: List[str], area_name: str):
     :return: Возвращает список токенов графиков аналитики
     """
     db_length = pd.read_sql("SELECT COUNT(*) FROM 'vacancy_db.sqlite'", connect).to_dict()["COUNT(*)"][0]
-    prof_area_vacancy_salary = f"SELECT SUBSTR(published_at, 1, 4) AS year, ROUND(AVG(salary)) FROM 'vacancy_db.sqlite' WHERE (area_name == '{area_name}' AND ( "
-    prof_area_vacancy_count = f"SELECT SUBSTR(published_at, 1, 4) AS year, COUNT(name) FROM 'vacancy_db.sqlite' WHERE (area_name == '{area_name}' AND ( "
+    prof_area_vacancy_salary = f"SELECT SUBSTR(published_at, 1, 4) AS year, ROUND(AVG(salary)), COUNT(name) FROM 'vacancy_db.sqlite' WHERE (area_name == '{area_name}' AND ( "
     for i in range(0, len(key_words)):
         if i == len(key_words) - 1:
             prof_area_vacancy_salary += f"name LIKE '%{key_words[i]}%') "
-            prof_area_vacancy_count += f"name LIKE '%{key_words[i]}%') "
             break
         prof_area_vacancy_salary += f"name LIKE '%{key_words[i]}%' OR "
-        prof_area_vacancy_count += f"name LIKE '%{key_words[i]}%' OR "
     prof_area_vacancy_salary += " ) GROUP BY year"
-    prof_area_vacancy_count += " ) GROUP BY year"
 
     area_salary_groups = pd.read_sql(
         "SELECT area_name, ROUND(AVG(salary)), COUNT(area_name) FROM 'vacancy_db.sqlite' "
         "GROUP BY area_name "
         "ORDER BY COUNT(area_name) DESC ", connect)
-    area_salary_groups = area_salary_groups[area_salary_groups["COUNT(area_name)"] >= 0.01 * db_length]
-    area_salary_dict = dict(area_salary_groups[["area_name", "ROUND(AVG(salary))"]].to_dict("split")["data"])
+    area_salary_groups2 = area_salary_groups[area_salary_groups["COUNT(area_name)"] >= 0.01 * db_length]
+    area_salary_dict = dict(area_salary_groups2[["area_name", "ROUND(AVG(salary))"]].to_dict("split")["data"])
     area_salary_dict = sort_dict_area(area_salary_dict)
 
-    area_vacancy_groups = pd.read_sql("SELECT area_name, COUNT(area_name) FROM 'vacancy_db.sqlite' "
-                                      "GROUP BY area_name "
-                                      "ORDER BY COUNT(area_name) DESC "
-                                      "LIMIT 10", connect)
-    area_vacancy_groups["COUNT(area_name)"] = round(area_vacancy_groups["COUNT(area_name)"] / db_length, 2)
-    area_vacancy_dict = dict(area_vacancy_groups[["area_name", 'COUNT(area_name)']].to_dict("split")["data"])
+    area_salary_groups["COUNT(area_name)"] = round(area_salary_groups["COUNT(area_name)"] / db_length, 2)
+    area_vacancy_dict = dict(area_salary_groups[["area_name", 'COUNT(area_name)']][:10].to_dict("split")["data"])
 
     vacancy_area_salary = pd.read_sql(prof_area_vacancy_salary, connect)
+    vacancy_area_count = {**template_dict, **dict(vacancy_area_salary[["year", "COUNT(name)"]].to_dict("split")["data"])}
     vacancy_area_salary = {**template_dict,
                            **dict(vacancy_area_salary[["year", "ROUND(AVG(salary))"]].to_dict("split")["data"])}
-
-    vacancy_area_count = pd.read_sql(prof_area_vacancy_count, connect)
-    vacancy_area_count = {**template_dict, **dict(vacancy_area_count[["year", "COUNT(name)"]].to_dict("split")["data"])}
 
     year_dicts = [vacancy_area_salary, vacancy_area_count]
     area_dicts = [area_salary_dict, area_vacancy_dict]
